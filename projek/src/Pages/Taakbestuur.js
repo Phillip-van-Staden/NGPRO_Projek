@@ -3,7 +3,7 @@ import './Styles/taakbestuur.css';
 
 const taakbestuur = () => {
     return (
-        <div></div>
+        <div className='nav'></div>
     );
 }
 

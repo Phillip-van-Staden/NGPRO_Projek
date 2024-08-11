@@ -1,0 +1,9 @@
+div.nav {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    margin-left: 10px;
+    width: 300px;
+    background: #fff;
+    
+}
