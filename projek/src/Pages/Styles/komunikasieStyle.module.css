@@ -1,81 +1,131 @@
-div[class="kComunicate"]{
-    font-family: 'Arial', sans-serif;
-
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-div[class="kBody"] ul{
-    border: 3px solid hsl(118, 98%, 49%);
-    background-color: rgba(75, 75, 75, 0.1);
-    border-radius: 10px;
-    box-shadow: 5px 5px 5px black;
+div[class="kComunicate"] {
+    font-family: Arial, sans-serif;
     padding: 20px;
-    margin: 10px auto;
-    text-align: center;
-    /* min-width: 250px; */
-    overflow-y: auto;
-    
-  }
-div[class="kBody"] ul li{
-    list-style: none;
-    border: 1px solid hsla(118, 98%, 49%, 0.403);
-    background-color: hsl(120, 73%, 75%);
-    border-radius: 10px;
-    box-shadow: 5px 5px 5px black;
-    padding: 20px;
-    margin: 10px auto;
-    text-align: center;
-    text-wrap: wrap;
-    overflow-wrap: anywhere;
-    max-width: 300px;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
-h2[class="KHead"]{
-    font-size: 4rem; 
-    text-shadow: 5px 5px hsla(0, 0%, 23%, 0.374);
-    text-align: center;
+
+h2[class="KHead"] {
+    text-shadow: 5px 5px hsla(0, 0%, 37%, 0.219);
+    text-align: center; 
+    color: #4CAF50; 
+    font-size: 2.5em;
+    margin-bottom: 20px;
 }
-input[class="KText"]{
-    font-size: 1.2rem;
+
+
+div[class="kBody"] {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; 
+}
+
+
+div[class="KChat"] {
+    flex: 2;
+    border: 1px solid #ddd;
+    border-radius: 8px;
     padding: 15px;
-    border: 2px solid hsla(0, 0%, 80%, 0.5);
-    border-radius: 5px;
-    color: hsla(0, 0%, 0%, 0.5);
+    background-color: #f4f4f4;
 }
-input[class="KInFile"]{
-    font-size: 1.2rem;
+
+div[class="KChat"] h3 {
+    color: #4CAF50; 
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+div[class="KChat"] ul {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+div[class="KChat"] li {
+    background-color: #fff; 
+    border: 1px solid #ddd;
+    border-radius: 4px;
     padding: 10px;
-    border: 2px solid hsla(0, 0%, 80%, 0.5);
-    border-radius: 5px;
-    color: hsla(0, 0%, 0%, 0.5);
-    
+    margin-bottom: 10px;
 }
+
+
+div[class="KFile"] {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f4f4f4;
+}
+
+div[class="KFile"] h3 {
+    color: #4CAF50; 
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+div[class="KFile"] ul {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+div[class="KFile"] li {
+    background-color: #fff; 
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+
+input[class="KText"] {
+    width: calc(100% - 22px); 
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
 button[class="KButton"]{
-    font-size: 1.2rem;
-    font-weight: bold;
-    padding: 15px 20px;
-    background-color: rgb(1, 35, 5);
+    background-color: #4CAF50; 
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
+    padding: 10px 20px;
     cursor: pointer;
+    font-size: 16px;
+}
 
+button[class="KButton"]:hover {
+    background-color: #45a049; 
 }
-button[id="terug"]{
-    margin-top: 100px;
+
+
+input[class="KInFile"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
 }
-div[class="kBody"]{
-    display: flex;
-    margin: 10px;
+
+
+button[id="terug"] {
+    background-color: #f44336; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
 }
-div[class="KFile"]{
-    margin: 10px;
-    flex:1;
-}
-div[class="KChat"]{
-    margin: 10px;
-    flex: 2;
+
+button[id="terug"]:hover {
+    background-color: #e53935; 
 }
