@@ -46,6 +46,9 @@ function ProjekBestuur(){
     function deleteProjek(index){
         setProjekte(p=>p.filter((_,i)=>i!==index));
     }
+    function editTake(index){
+        
+    }
     return(
        <div className='project'>
             <h1 className='PHead'>Projekte</h1>
@@ -68,6 +71,7 @@ function ProjekBestuur(){
                     <p className='project'>{projekte.begin} to {projekte.einde}</p>
                     <button className='project' onClick={()=>editProjek(index)}>Edit</button>
                     <button className='project' onClick={()=>deleteProjek(index)}>Delete</button>
+                    <button className='project' onClick={()=>editTake(index)}>Take</button>
                     </li>)}
             </ul>
        </div>
