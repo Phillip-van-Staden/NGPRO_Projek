@@ -43,8 +43,8 @@ const LoginSignup = () => {
             </div>
             <div className="forgot-password">Forgot password?</div>
             <div className="submit-container">
-                <button className={action === "Login"?"submit gray":"submit"}>Login</button>
-                <button type="submit">Sign Up</button>
+                <button className={action === "Sign Up"?"submit gray":"submit"}>Login</button>
+                <button className={action === "Login"?"submit gray":"submit"}>Sign Up</button>
             </div>
         </div>
     )
