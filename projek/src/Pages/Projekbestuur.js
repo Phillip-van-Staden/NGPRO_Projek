@@ -1,5 +1,6 @@
 import './Styles/Projek.module.css';
 import React,{useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 function ProjekBestuur(){
     const [projekte,setProjekte]=useState([]);
     const [name,setName]=useState("");
@@ -7,6 +8,7 @@ function ProjekBestuur(){
     const [start,setStart]=useState("");
     const [end,setEnd]=useState("");
     const [editingIndex, setEditingIndex] = useState(null);
+    const navigate = useNavigate();
     function handleNaamChange(event){
         setName(event.target.value);
     }
@@ -20,20 +22,23 @@ function ProjekBestuur(){
         setEnd(event.target.value);
     }
     function addProjek(){
-        if (editingIndex !== null) {
-            const updatedProjekte = projekte.map((projek, index) =>
-                index === editingIndex ? { naam: name, beskruiwing: desc, begin: start, einde: end } : projek
-            );
-            setProjekte(updatedProjekte);
-            setEditingIndex(null);
-        } else {
-            const newProjek = { naam: name, beskruiwing: desc, begin: start, einde: end };
-            setProjekte(p => [...p, newProjek]);
+        if(name.trim()){
+            if (editingIndex !== null) {
+                const updatedProjekte = projekte.map((projek, index) =>
+                    index === editingIndex ? { naam: name, beskruiwing: desc, begin: start, einde: end } : projek
+                );
+                setProjekte(updatedProjekte);
+                setEditingIndex(null);
+            } else {
+                const newProjek = { naam: name, beskruiwing: desc, begin: start, einde: end };
+                setProjekte(p => [...p, newProjek]);
+            }
+            setName("");
+            setDesc("");
+            setStart("");
+            setEnd("");
         }
-        setName("");
-        setDesc("");
-        setStart("");
-        setEnd("");
+       
     }
     function editProjek(index){
         const projekToEdit = projekte[index];
@@ -47,7 +52,8 @@ function ProjekBestuur(){
         setProjekte(p=>p.filter((_,i)=>i!==index));
     }
     function editTake(index){
-        
+
+        navigate('/taakbestuur');
     }
     return(
        <div className='project'>
