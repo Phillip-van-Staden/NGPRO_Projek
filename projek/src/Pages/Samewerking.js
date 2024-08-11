@@ -1,9 +1,11 @@
 import './Styles/komunikasieStyle.module.css'
 import React,{useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 function Samewerking(){
     const [messages,setMessages]=useState("");
     const [files, setFile] = useState([]);
     const [chats,setChats]=useState([]);
+    const navigate = useNavigate();
     function handleNewMessage(event){
         setMessages(event.target.value);
     }
@@ -17,7 +19,7 @@ function Samewerking(){
 
     }
     function handleBack(){
-        
+        navigate('/projekbestuur');
     }
     const handleFileUpload = (e) => {
         const uploadedFiles = Array.from(e.target.files);
