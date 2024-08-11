@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import './Styles/LoginSignup.css';
-import taakbestuur from './Taakbestuur';
+import {useHistory} from 'react-router-dom';
+
 import user_icon from './assets/user.png';
 import email_icon from './assets/email.png';
 import password_icon from './assets/password.png';
@@ -8,6 +9,10 @@ import right_arrow from './assets/right_arrow.png';
 
 const LoginSignup = () => {
     const [action, setAction] = useState("Sign Up");
+    const history = useHistory();
+    const handleNext = () => {
+        history.push('/taakbestuur');
+    };
     return (
         <div className="container">
             <div className="header">
@@ -51,7 +56,7 @@ const LoginSignup = () => {
             <div className="submit-container">
                 <button className={action === "Sign Up"?"button gray":"submit"} onClick={()=>{setAction("Login")}}>Login</button>
                 <button className={action === "Login"?"button gray":"submit"} onClick={()=>{setAction("Sign Up")}}>Sign Up</button>
-                <button className="next" onClick={<div><taakbestuur/></div>}>Next<img src={right_arrow}/></button>
+                <button className="next" onClick={handleNext}>Next<img src={right_arrow}/></button>
 
             </div>
         </div>
