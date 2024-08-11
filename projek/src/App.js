@@ -8,9 +8,9 @@ function App() {
    <>
     <>
       {/* <Samewerking/> */}
-      <ProjekBestuur/>
+      {/* <ProjekBestuur/> */}
     </>
-    {/* <div className="login"><LoginSignup /></div> */}
+    <div className="login"><LoginSignup /></div>
    </>
   );
 }
