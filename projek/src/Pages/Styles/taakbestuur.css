@@ -10,7 +10,8 @@ div.container {
 }
 
 div.nav {
-    width: 25%;
+    height: 100vh;
+    width: 160px;
     background: #454545;
     padding: 5px;
 }
