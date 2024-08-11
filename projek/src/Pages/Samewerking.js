@@ -19,7 +19,7 @@ function Samewerking(){
 
     }
     function handleBack(){
-        navigate('/projekbestuur');
+        navigate('/dashboard');
     }
     const handleFileUpload = (e) => {
         const uploadedFiles = Array.from(e.target.files);

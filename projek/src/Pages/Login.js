@@ -11,7 +11,7 @@ const LoginSignup = () => {
     const [action, setAction] = useState("Sign Up");
     const navigate = useNavigate();
     const handleNext = () => {
-        navigate('/projekbestuur');
+        navigate('/dashboard');
     };
     return (
         <div className="container">
