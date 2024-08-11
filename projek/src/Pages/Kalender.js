@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './Kalender.css';
+import './Styles/Kalender.css';
 
 function Kalender () {
     const [currentDate, setCurrentDate] = useState(new Date());
