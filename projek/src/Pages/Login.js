@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import './Styles/LoginSignup.css';
-import {useHistory} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import user_icon from './assets/user.png';
 import email_icon from './assets/email.png';
@@ -9,9 +9,9 @@ import right_arrow from './assets/right_arrow.png';
 
 const LoginSignup = () => {
     const [action, setAction] = useState("Sign Up");
-    const history = useHistory();
+    const navigate = useNavigate();
     const handleNext = () => {
-        history.push('/taakbestuur');
+        navigate('/taakbestuur');
     };
     return (
         <div className="container">
