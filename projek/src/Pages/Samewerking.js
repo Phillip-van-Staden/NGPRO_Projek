@@ -40,7 +40,7 @@ function Samewerking(){
                 <button className="KButton" onClick={handleSentMessage}>Stuur boodskap</button>
             </div>
             <div className='KFile'>
-                <h3>Leers:</h3>
+                <h3>Lêers:</h3>
                 <ul>
                     {files.map((file, index) => (
                         <li key={index}>{file.name}</li>
