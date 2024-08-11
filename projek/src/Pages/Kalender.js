@@ -4,8 +4,8 @@ import './Kalender.css';
 
 function Kalender () {
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [events, setEvents] = useState({});  // Object to store events by date
-    const [selectedDate, setSelectedDate] = useState(null);  // To track the currently selected date
+    const [events, setEvents] = useState({});  
+    const [selectedDate, setSelectedDate] = useState(null);
     const [newEvent, setNewEvent] = useState({ title: '', description: '' });
 
     function handleNextMonth () {
@@ -112,7 +112,7 @@ function Kalender () {
                 </div>
             )}
 
-            <Link to="/progress-tracking">Go to Progress Tracking</Link>
+            <Link to="/VorderingVolg">Go to Vordering Volg</Link>
         </div>
     );
 };
