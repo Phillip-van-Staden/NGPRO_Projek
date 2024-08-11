@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import './Styles/LoginSignup.css';
+import taakbestuur from './Taakbestuur';
 import user_icon from './assets/user.png';
 import email_icon from './assets/email.png';
 import password_icon from './assets/password.png';
@@ -50,11 +51,11 @@ const LoginSignup = () => {
             <div className="submit-container">
                 <button className={action === "Sign Up"?"button gray":"submit"} onClick={()=>{setAction("Login")}}>Login</button>
                 <button className={action === "Login"?"button gray":"submit"} onClick={()=>{setAction("Sign Up")}}>Sign Up</button>
-                <button className="next">Next<img src={right_arrow}/></button>
+                <button className="next" onClick={<div><taakbestuur/></div>}>Next<img src={right_arrow}/></button>
 
             </div>
         </div>
-    )
+    );
 }
 
 export default LoginSignup;
