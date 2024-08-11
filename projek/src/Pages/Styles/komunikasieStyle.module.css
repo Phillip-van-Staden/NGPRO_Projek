@@ -1,0 +1,81 @@
+div[class="kComunicate"]{
+    font-family: 'Arial', sans-serif;
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+div[class="kBody"] ul{
+    border: 3px solid hsl(118, 98%, 49%);
+    background-color: rgba(75, 75, 75, 0.1);
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px black;
+    padding: 20px;
+    margin: 10px auto;
+    text-align: center;
+    /* min-width: 250px; */
+    overflow-y: auto;
+    
+  }
+div[class="kBody"] ul li{
+    list-style: none;
+    border: 1px solid hsla(118, 98%, 49%, 0.403);
+    background-color: hsl(120, 73%, 75%);
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px black;
+    padding: 20px;
+    margin: 10px auto;
+    text-align: center;
+    text-wrap: wrap;
+    overflow-wrap: anywhere;
+    max-width: 300px;
+}
+
+h2[class="KHead"]{
+    font-size: 4rem; 
+    text-shadow: 5px 5px hsla(0, 0%, 23%, 0.374);
+    text-align: center;
+}
+input[class="KText"]{
+    font-size: 1.2rem;
+    padding: 15px;
+    border: 2px solid hsla(0, 0%, 80%, 0.5);
+    border-radius: 5px;
+    color: hsla(0, 0%, 0%, 0.5);
+}
+input[class="KInFile"]{
+    font-size: 1.2rem;
+    padding: 10px;
+    border: 2px solid hsla(0, 0%, 80%, 0.5);
+    border-radius: 5px;
+    color: hsla(0, 0%, 0%, 0.5);
+    
+}
+button[class="KButton"]{
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 15px 20px;
+    background-color: rgb(1, 35, 5);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+button[id="terug"]{
+    margin-top: 100px;
+}
+div[class="kBody"]{
+    display: flex;
+    margin: 10px;
+}
+div[class="KFile"]{
+    margin: 10px;
+    flex:1;
+}
+div[class="KChat"]{
+    margin: 10px;
+    flex: 2;
+}
