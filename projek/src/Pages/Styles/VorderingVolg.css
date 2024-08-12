@@ -1,61 +1,43 @@
-/* Container for the progress tracking */
-.progress-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px auto;
-    width: 90%;
-    max-width: 800px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+.project-header {
+    background-color: #ccc;
+    text-align: left;
+    padding-left: 10px;
+    font-weight: bold;
 }
 
-/* Task List Styling */
-.task-list {
+.gantt-chart-container {
     width: 100%;
+    overflow-x: auto;
 }
 
-.task-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    background-color: white;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    transition: background-color 0.3s;
+.gantt-chart {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
 }
 
-.task-item:hover {
-    background-color: #f1f1f1;
-}
-
-/* Task Title Styling */
-.task-title {
-    font-size: 1.1rem;
-    color: #333;
-}
-
-/* Task Status Dropdown */
-.task-status select {
-    padding: 5px 10px;
-    border-radius: 5px;
+.gantt-chart th, .gantt-chart td {
     border: 1px solid #ddd;
-    background-color: white;
-    font-size: 1rem;
+    text-align: center;
+    padding: 8px;
+    width: 20px;
 }
 
-/* Link Styling */
-a {
-    text-decoration: none;
-    color: #007bff;
-    margin-top: 20px;
-    display: inline-block;
+.gantt-chart th {
+    background-color: #f2f2f2;
 }
 
-a:hover {
-    text-decoration: underline;
+.gantt-day {
+    background-color: #f9f9f9;
+}
+
+.gantt-cell {
+    position: relative;
+    height: 30px;
+}
+
+.gantt-bar {
+    background-color: #007bff;
+    border-radius: 5px;
+    height: 100%;
 }
