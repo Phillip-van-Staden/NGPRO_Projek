@@ -112,7 +112,7 @@ function Kalender () {
                 </div>
             )}
 
-            <Link to="/VorderingVolg">Go to Vordering Volg</Link>
+            <Link to="/dashboard">Terug</Link>
         </div>
     );
 };

@@ -7,13 +7,13 @@ const Dashboard = () => {
       <div className="dashboard-container">
         <div className="header">
           <h1>Dashboard</h1>
-          <button  className="logout-button">Teken uit</button>
+          <button onClick={()=>navigate('/')} className="logout-button">Teken uit</button>
         </div>
         <div className="dashboard-cards">
-          <div className="dashboard-card">
+          {/* <div className="dashboard-card">
             <h2>Gebruikersverifikasie</h2>
-            <button onClick={()=>navigate('/')} className="dashboard-button">Bestuur Gebruikers</button>
-          </div>
+            <button  className="dashboard-button">Bestuur Gebruikers</button>
+          </div> */}
           <div className="dashboard-card">
             <h2>Projekbestuur</h2>
             <button onClick={()=>navigate('/projekbestuur')} className="dashboard-button">Bestuur Projekte</button>
