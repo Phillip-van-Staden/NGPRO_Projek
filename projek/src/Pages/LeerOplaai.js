@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import './Styles/FileUpload.css';
-
+import { useNavigate } from 'react-router-dom';
 const LeerOplaai = () => {
   const [files, setFiles] = useState([]);
-
+  const navigate = useNavigate();
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files).map((file) => ({
       ...file,
@@ -37,7 +37,7 @@ const LeerOplaai = () => {
             ))}
           </div>
         </div>
-        <button className="next" disabled>
+        <button className="next" onClick={()=>navigate('/dashboard')}>
           Terug na Dashboard
         </button>
       </div>
