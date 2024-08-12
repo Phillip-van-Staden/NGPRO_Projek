@@ -78,6 +78,12 @@ button.new {
 
 div.addtask {
     color: #3c009d;
-    font-size: 24px;
+    font-size: 16px;
     font-weight: 700;
+}
+
+button.new img {
+    margin: 0px 0px 0px 20px;
+    width: 30px;
+    height: auto;
 }

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './Styles/taakbestuur.css';
 
+import add from './assets/add.png';
+
 function TaskForm ({newTask}) {
     const [taskName, setName] = useState('');
     const [taskProject, setProject] = useState('');
@@ -53,7 +55,7 @@ function TaskForm ({newTask}) {
                 onChange={(e) => setEnd(e.target.value)}
                 required
             />
-            <button className='new' type="submit">Nuwe Taak</button>
+            <button className='new' type="submit">Nuwe Taak<img src={add}/></button>
         </form>
     );
 }

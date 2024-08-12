@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './VorderingVolg.css';
+import './Styles/VorderingVolg.css';
 
 function VorderingVolg () {
     const [projects, setProjects] = useState([
