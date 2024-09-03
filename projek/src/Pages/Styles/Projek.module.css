@@ -17,6 +17,8 @@ div[class="project"] {
 ul[class="project"] {
     list-style-type: none;
     padding: 0;
+    overflow: auto;
+    max-height: 400px;
 }
 
 li[class="project"] {
@@ -90,4 +92,5 @@ h3[class="project"] {
 
 p[class="project"] {
     margin: 5px 0;
+    overflow-wrap: break-word;
 }

@@ -1,86 +1,126 @@
 import './Styles/Projek.module.css';
-import React,{useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-function ProjekBestuur(){
-    const [projekte,setProjekte]=useState([]);
-    const [name,setName]=useState("");
-    const [desc,setDesc]=useState("");
-    const [start,setStart]=useState("");
-    const [end,setEnd]=useState("");
+
+function ProjekBestuur() {
+    const [projekte, setProjekte] = useState([]);
+    const [name, setName] = useState("");
+    const [desc, setDesc] = useState("");
+    const [start, setStart] = useState("");
+    const [end, setEnd] = useState("");
     const [editingIndex, setEditingIndex] = useState(null);
     const navigate = useNavigate();
-    function handleNaamChange(event){
+
+    useEffect(() => {
+        fetch('http://localhost:5000/projects')
+            .then(response => response.json())
+            .then(data => setProjekte(data.projects));
+    }, []);
+
+    function handleNaamChange(event) {
         setName(event.target.value);
     }
-    function handleDescriptionChange(event){
+
+    function handleDescriptionChange(event) {
         setDesc(event.target.value);
     }
-    function handleStartChange(event){
+
+    function handleStartChange(event) {
         setStart(event.target.value);
     }
-    function handleEndChange(event){
+
+    function handleEndChange(event) {
         setEnd(event.target.value);
     }
-    function addProjek(){
-        if(name.trim()){
+
+    function addProjek() {
+        if (name.trim()) {
+            const newProjek = { name, description: desc, start_date: start, end_date: end };
+            
             if (editingIndex !== null) {
-                const updatedProjekte = projekte.map((projek, index) =>
-                    index === editingIndex ? { naam: name, beskruiwing: desc, begin: start, einde: end } : projek
-                );
-                setProjekte(updatedProjekte);
-                setEditingIndex(null);
+                const projectId = projekte[editingIndex].id;
+                fetch(`http://localhost:5000/projects/${projectId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newProjek)
+                }).then(() => {
+                    const updatedProjekte = projekte.map((projek, index) =>
+                        index === editingIndex ? { ...projek, ...newProjek } : projek
+                    );
+                    setProjekte(updatedProjekte);
+                    setEditingIndex(null);
+                });
             } else {
-                const newProjek = { naam: name, beskruiwing: desc, begin: start, einde: end };
-                setProjekte(p => [...p, newProjek]);
+                fetch('http://localhost:5000/projects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newProjek)
+                }).then(response => response.json())
+                  .then(data => {
+                      setProjekte([...projekte, { ...newProjek, id: data.id }]);
+                  });
             }
+
             setName("");
             setDesc("");
             setStart("");
             setEnd("");
         }
-       
     }
-    function editProjek(index){
+
+    function editProjek(index) {
         const projekToEdit = projekte[index];
-        setName(projekToEdit.naam);
-        setDesc(projekToEdit.beskruiwing);
-        setStart(projekToEdit.begin);
-        setEnd(projekToEdit.einde);
+        setName(projekToEdit.name);
+        setDesc(projekToEdit.description);
+        setStart(projekToEdit.start_date);
+        setEnd(projekToEdit.end_date);
         setEditingIndex(index);
     }
-    function deleteProjek(index){
-        setProjekte(p=>p.filter((_,i)=>i!==index));
-    }
-    function editTake(index){
 
+    function deleteProjek(index) {
+        const projectId = projekte[index].id;
+        fetch(`http://localhost:5000/projects/${projectId}`, {
+            method: 'DELETE'
+        }).then(() => {
+            setProjekte(p => p.filter((_, i) => i !== index));
+        });
+    }
+
+    function editTake(index) {
         navigate('/taakbestuur');
     }
-    return(
-       <div className='project'>
+    // function navigateToSamewerking(index) {
+    //     navigate(`/samewerking`);
+    // }
+    return (
+        <div className='project'>
             <h1 className='PHead'>Projekte</h1>
-            <label className='project' for="n">Naam: </label>
+            <label className='project' htmlFor="n">Naam: </label>
             <input className='project' type='text' id='n' value={name} onChange={handleNaamChange} placeholder='Projek naam'/>
-            <label className='project' for="d">Beskrywing: </label>
-            <textarea className='project' type='text' id='d' value={desc} onChange={handleDescriptionChange} placeholder='Projek  beskrywing'></textarea>
-            <label className='project' for="s">Begin datum: </label>
+            <label className='project' htmlFor="d">Beskrywing: </label>
+            <textarea className='project' id='d' value={desc} onChange={handleDescriptionChange} placeholder='Projek beskrywing'></textarea>
+            <label className='project' htmlFor="s">Begin datum: </label>
             <input className='project' type='date' id='s' value={start} onChange={handleStartChange} />
-            <label className='project' for="e">Eind datum: </label>
-            <input className='project' type='date' id='e' value={end} onChange={handleEndChange}  />
-            <button  className='project' onClick={addProjek}> {editingIndex !== null ? 'Update' : 'Add'}</button>
+            <label className='project' htmlFor="e">Eind datum: </label>
+            <input className='project' type='date' id='e' value={end} onChange={handleEndChange} />
+            <button className='project' onClick={addProjek}>{editingIndex !== null ? 'Update' : 'Add'}</button>
 
             <h2 className='project'>Lys van Projekte</h2>
             <ul className='project'>
-                {projekte.map((projekte,index)=>
-                <li className='project' key={index} >
-                    <h3 className='project'>{projekte.naam}</h3>
-                    <p className='project'>{projekte.beskruiwing}</p>
-                    <p className='project'>{projekte.begin} to {projekte.einde}</p>
-                    <button className='project' onClick={()=>editProjek(index)}>Edit</button>
-                    <button className='project' onClick={()=>deleteProjek(index)}>Delete</button>
-                    <button className='project' onClick={()=>editTake(index)}>Take</button>
-                    </li>)}
+                {projekte.map((projek, index) => (
+                    <li className='project' key={index}>
+                        <h3 className='project'>{projek.name}</h3>
+                        <p className='project'>{projek.description}</p>
+                        <p className='project'>{projek.start_date} to {projek.end_date}</p>
+                        <button className='project' onClick={() => editProjek(index)}>Edit</button>
+                        <button className='project' onClick={() => deleteProjek(index)}>Delete</button>
+                        <button className='project' onClick={() => editTake(index)}>Take</button>
+                        {/* <button className='project' onClick={() => navigateToSamewerking(projekte.id)}>Komunikasie</button> */}
+                    </li>
+                ))}
             </ul>
-       </div>
+        </div>
     );
 }
-export default ProjekBestuur
+
+export default ProjekBestuur;
