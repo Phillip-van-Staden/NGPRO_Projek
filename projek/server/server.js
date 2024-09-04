@@ -32,6 +32,15 @@ db.serialize(() => {
         filename TEXT,
         filedata BLOB
     )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS USER (
+        USER_ID PRIMARY KEY AUTOINCREMENT,
+        USER_FNAME TEXT NOT NULL,
+        USER_LNAME TEXT NOT NULL,
+        USER_EMAIL TEXT NOT NULL,
+        USER_PASSWORD TEXT NOT NULL,
+        
+        )`);
 });
 const storage = multer.diskStorage({
     destination: './uploads',
