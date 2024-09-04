@@ -23,7 +23,9 @@ db.serialize(() => {
     )`);
     db.run(`CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        message TEXT
+        message TEXT,
+        project_id INTEGER,
+        FOREIGN KEY (project_id) REFERENCES projects (id)
     )`);
     
 
@@ -34,13 +36,12 @@ db.serialize(() => {
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS USER (
-        USER_ID PRIMARY KEY AUTOINCREMENT,
+        USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
         USER_FNAME TEXT NOT NULL,
         USER_LNAME TEXT NOT NULL,
         USER_EMAIL TEXT NOT NULL,
-        USER_PASSWORD TEXT NOT NULL,
-        
-        )`);
+        USER_PASSWORD TEXT NOT NULL  
+    )`);
 });
 const storage = multer.diskStorage({
     destination: './uploads',
@@ -56,29 +57,57 @@ const upload = multer({ storage });
 app.use('/uploads', express.static('uploads'));
 
 // Route to get all messages
-app.get('/messages', (req, res) => {
-    db.all('SELECT * FROM messages', [], (err, rows) => {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
+app.post('/projects/:projectId/messages', (req, res) => {
+    const { projectId } = req.params;
+    const { message } = req.body;
+
+    db.run(
+        'INSERT INTO messages (message, project_id) VALUES (?, ?)',
+        [message, projectId],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(201).json({ id: this.lastID, message });
         }
-        res.json({ messages: rows });
-    });
+    );
 });
 
-// Route to add a new message
-app.post('/messages', (req, res) => {
-    const { message } = req.body;
-    db.run(`INSERT INTO messages (message) VALUES (?)`, [message], function(err) {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
+// Route to get messages for a specific project
+app.get('/projects/:projectId/messages', (req, res) => {
+    const { projectId } = req.params;
+
+    db.all(
+        'SELECT * FROM messages WHERE project_id = ?',
+        [projectId],
+        (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.json({ messages: rows });
         }
-        res.json({ id: this.lastID });
-    });
+    );
 });
 
 // Route to upload files
+app.post('/upload', upload.array('files'), (req, res) => {
+    const files = req.files;
+    const placeholders = files.map(() => '(?, ?)').join(',');
+    const values = files.flatMap(file => {
+        const fileContent = fs.readFileSync(file.path); 
+        return [file.originalname, fileContent]; 
+    });
+
+    db.run(`INSERT INTO files (filename, filedata) VALUES ${placeholders}`, values, function(err) {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({ uploaded: this.changes });
+    });
+});
+
+/// Route to upload files
 app.post('/upload', upload.array('files'), (req, res) => {
     const files = req.files;
     const placeholders = files.map(() => '(?, ?)').join(',');
@@ -115,21 +144,21 @@ app.get('/files', (req, res) => {
 });
 
 // Route to download a specific file
-// app.get('/files/:id', (req, res) => {
-//     const { id } = req.params;
-//     db.get('SELECT * FROM files WHERE id = ?', [id], (err, row) => {
-//         if (err) {
-//             res.status(400).json({ error: err.message });
-//             return;
-//         }
-//         if (!row) {
-//             res.status(404).json({ error: 'File not found' });
-//             return;
-//         }
-//         res.setHeader('Content-Disposition', `attachment; filename=${row.filename}`);
-//         res.send(row.filedata);
-//     });
-// });
+app.get('/files/:id', (req, res) => {
+    const { id } = req.params;
+    db.get('SELECT * FROM files WHERE id = ?', [id], (err, row) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        if (!row) {
+            res.status(404).json({ error: 'File not found' });
+            return;
+        }
+        res.setHeader('Content-Disposition', `attachment; filename=${row.filename}`);
+        res.send(row.filedata);
+    });
+});
 
 // Get all projects
 app.get('/projects', (req, res) => {
@@ -181,38 +210,38 @@ app.delete('/projects/:id', (req, res) => {
     });
 });
 
-// Create messages for a project
-app.post('/projects/:projectId/messages', (req, res) => {
-    const { projectId } = req.params;
-    const { message } = req.body;
+// // Create messages for a project
+// app.post('/projects/:projectId/messages', (req, res) => {
+//     const { projectId } = req.params;
+//     const { message } = req.body;
 
-    db.run(
-        'INSERT INTO messages (message, project_id) VALUES (?, ?)',
-        [message, projectId],
-        function (err) {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json({ id: this.lastID, message });
-        }
-    );
-});
+//     db.run(
+//         'INSERT INTO messages (message, project_id) VALUES (?, ?)',
+//         [message, projectId],
+//         function (err) {
+//             if (err) {
+//                 return res.status(500).json({ error: err.message });
+//             }
+//             res.status(201).json({ id: this.lastID, message });
+//         }
+//     );
+// });
 
-// Get messages for a project
-app.get('/projects/:projectId/messages', (req, res) => {
-    const { projectId } = req.params;
+// // Get messages for a project
+// app.get('/projects/:projectId/messages', (req, res) => {
+//     const { projectId } = req.params;
 
-    db.all(
-        'SELECT * FROM messages WHERE project_id = ?',
-        [projectId],
-        (err, rows) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            res.json(rows);
-        }
-    );
-});
+//     db.all(
+//         'SELECT * FROM messages WHERE project_id = ?',
+//         [projectId],
+//         (err, rows) => {
+//             if (err) {
+//                 return res.status(500).json({ error: err.message });
+//             }
+//             res.json(rows);
+//         }
+//     );
+// });
 
 
 

@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import './Styles/komunikasieStyle.module.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function Samewerking() {
     const [messages, setMessages] = useState("");
     const [files, setFiles] = useState([]);
     const [chats, setChats] = useState([]);
     const navigate = useNavigate();
+    const { projectId } = useParams(); 
 
     useEffect(() => {
-        fetch('http://localhost:5000/messages')
+        fetch(`http://localhost:5000/projects/${projectId}/messages`)
             .then(response => response.json())
             .then(data => setChats(data.messages));
 
         fetch('http://localhost:5000/files')
             .then(response => response.json())
             .then(data => setFiles(data.files));
-    }, []);
+    }, [projectId]);
 
     function handleNewMessage(event) {
         setMessages(event.target.value);
@@ -25,7 +26,7 @@ function Samewerking() {
     function handleSentMessage() {
         if (messages.trim()) {
             const newChat = { message: messages };
-            fetch('http://localhost:5000/messages', {
+            fetch(`http://localhost:5000/projects/${projectId}/messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -73,7 +74,7 @@ function Samewerking() {
     }
 
     function handleBack() {
-        navigate('/dashboard');
+        navigate('/projekbestuur');
     }
 
     return (

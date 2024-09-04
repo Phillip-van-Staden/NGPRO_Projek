@@ -22,10 +22,10 @@ const Dashboard = () => {
             <h2>Taakbestuur</h2>
             <button onClick={()=>navigate('/taakbestuur')} className="dashboard-button">Bestuur Take</button>
           </div>
-          <div className="dashboard-card">
+          {/* <div className="dashboard-card">
             <h2>Samewerking</h2>
             <button onClick={()=>navigate('/samewerking')} className="dashboard-button">Span Kommunikasie</button>
-          </div>
+          </div> */}
           <div className="dashboard-card">
             <h2>Vordering Volg</h2>
             <button onClick={()=>navigate('/vorderingVolg')} className="dashboard-button">Volg Vordering</button>

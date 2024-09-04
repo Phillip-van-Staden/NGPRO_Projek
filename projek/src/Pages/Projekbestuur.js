@@ -86,12 +86,15 @@ function ProjekBestuur() {
         });
     }
 
-    function editTake(index) {
-        navigate('/taakbestuur');
+    function navigateToSamewerking(projectId) {
+        navigate(`/samewerking/${projectId}`);
     }
-    // function navigateToSamewerking(index) {
-    //     navigate(`/samewerking`);
-    // }
+    function navigateToTake() {
+        navigate(`/taakbestuur`);
+    }
+    function navigateToDash() {
+        navigate(`/dashboard`);
+    }
     return (
         <div className='project'>
             <h1 className='PHead'>Projekte</h1>
@@ -104,7 +107,7 @@ function ProjekBestuur() {
             <label className='project' htmlFor="e">Eind datum: </label>
             <input className='project' type='date' id='e' value={end} onChange={handleEndChange} />
             <button className='project' onClick={addProjek}>{editingIndex !== null ? 'Update' : 'Add'}</button>
-
+            <button className='project' onClick={navigateToDash}>Terug</button>
             <h2 className='project'>Lys van Projekte</h2>
             <ul className='project'>
                 {projekte.map((projek, index) => (
@@ -114,8 +117,8 @@ function ProjekBestuur() {
                         <p className='project'>{projek.start_date} to {projek.end_date}</p>
                         <button className='project' onClick={() => editProjek(index)}>Edit</button>
                         <button className='project' onClick={() => deleteProjek(index)}>Delete</button>
-                        <button className='project' onClick={() => editTake(index)}>Take</button>
-                        {/* <button className='project' onClick={() => navigateToSamewerking(projekte.id)}>Komunikasie</button> */}
+                        <button className='project' onClick={() => navigateToTake()}>Take</button>
+                        <button className='project' onClick={() => navigateToSamewerking(projek.id)}>Komunikasie</button>
                     </li>
                 ))}
             </ul>
