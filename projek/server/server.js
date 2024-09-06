@@ -1,5 +1,6 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
+const bcrypt = require('bcrypt');
 
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -23,9 +24,7 @@ db.serialize(() => {
     )`);
     db.run(`CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        message TEXT,
-        project_id INTEGER,
-        FOREIGN KEY (project_id) REFERENCES projects (id)
+        message TEXT
     )`);
     
 
@@ -37,11 +36,12 @@ db.serialize(() => {
 
     db.run(`CREATE TABLE IF NOT EXISTS USER (
         USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        USER_FNAME TEXT NOT NULL,
-        USER_LNAME TEXT NOT NULL,
+        USER_NAME TEXT NOT NULL,
         USER_EMAIL TEXT NOT NULL,
-        USER_PASSWORD TEXT NOT NULL  
-    )`);
+        USER_PASSWORD TEXT NOT NULL,
+        USER_CREATED DATE NOT NULL,
+        USER_UPDATED DATE
+        )`);
 });
 const storage = multer.diskStorage({
     destination: './uploads',
@@ -57,57 +57,29 @@ const upload = multer({ storage });
 app.use('/uploads', express.static('uploads'));
 
 // Route to get all messages
-app.post('/projects/:projectId/messages', (req, res) => {
-    const { projectId } = req.params;
-    const { message } = req.body;
-
-    db.run(
-        'INSERT INTO messages (message, project_id) VALUES (?, ?)',
-        [message, projectId],
-        function (err) {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json({ id: this.lastID, message });
-        }
-    );
-});
-
-// Route to get messages for a specific project
-app.get('/projects/:projectId/messages', (req, res) => {
-    const { projectId } = req.params;
-
-    db.all(
-        'SELECT * FROM messages WHERE project_id = ?',
-        [projectId],
-        (err, rows) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            res.json({ messages: rows });
-        }
-    );
-});
-
-// Route to upload files
-app.post('/upload', upload.array('files'), (req, res) => {
-    const files = req.files;
-    const placeholders = files.map(() => '(?, ?)').join(',');
-    const values = files.flatMap(file => {
-        const fileContent = fs.readFileSync(file.path); 
-        return [file.originalname, fileContent]; 
-    });
-
-    db.run(`INSERT INTO files (filename, filedata) VALUES ${placeholders}`, values, function(err) {
+app.get('/messages', (req, res) => {
+    db.all('SELECT * FROM messages', [], (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message });
             return;
         }
-        res.json({ uploaded: this.changes });
+        res.json({ messages: rows });
     });
 });
 
-/// Route to upload files
+// Route to add a new message
+app.post('/messages', (req, res) => {
+    const { message } = req.body;
+    db.run(`INSERT INTO messages (message) VALUES (?)`, [message], function(err) {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({ id: this.lastID });
+    });
+});
+
+// Route to upload files
 app.post('/upload', upload.array('files'), (req, res) => {
     const files = req.files;
     const placeholders = files.map(() => '(?, ?)').join(',');
@@ -144,21 +116,21 @@ app.get('/files', (req, res) => {
 });
 
 // Route to download a specific file
-app.get('/files/:id', (req, res) => {
-    const { id } = req.params;
-    db.get('SELECT * FROM files WHERE id = ?', [id], (err, row) => {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        if (!row) {
-            res.status(404).json({ error: 'File not found' });
-            return;
-        }
-        res.setHeader('Content-Disposition', `attachment; filename=${row.filename}`);
-        res.send(row.filedata);
-    });
-});
+// app.get('/files/:id', (req, res) => {
+//     const { id } = req.params;
+//     db.get('SELECT * FROM files WHERE id = ?', [id], (err, row) => {
+//         if (err) {
+//             res.status(400).json({ error: err.message });
+//             return;
+//         }
+//         if (!row) {
+//             res.status(404).json({ error: 'File not found' });
+//             return;
+//         }
+//         res.setHeader('Content-Disposition', `attachment; filename=${row.filename}`);
+//         res.send(row.filedata);
+//     });
+// });
 
 // Get all projects
 app.get('/projects', (req, res) => {
@@ -210,40 +182,105 @@ app.delete('/projects/:id', (req, res) => {
     });
 });
 
-// // Create messages for a project
-// app.post('/projects/:projectId/messages', (req, res) => {
-//     const { projectId } = req.params;
-//     const { message } = req.body;
+// Create messages for a project
+app.post('/projects/:projectId/messages', (req, res) => {
+    const { projectId } = req.params;
+    const { message } = req.body;
 
-//     db.run(
-//         'INSERT INTO messages (message, project_id) VALUES (?, ?)',
-//         [message, projectId],
-//         function (err) {
-//             if (err) {
-//                 return res.status(500).json({ error: err.message });
-//             }
-//             res.status(201).json({ id: this.lastID, message });
-//         }
-//     );
-// });
+    db.run(
+        'INSERT INTO messages (message, project_id) VALUES (?, ?)',
+        [message, projectId],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(201).json({ id: this.lastID, message });
+        }
+    );
+});
 
-// // Get messages for a project
-// app.get('/projects/:projectId/messages', (req, res) => {
-//     const { projectId } = req.params;
+// Get messages for a project
+app.get('/projects/:projectId/messages', (req, res) => {
+    const { projectId } = req.params;
 
-//     db.all(
-//         'SELECT * FROM messages WHERE project_id = ?',
-//         [projectId],
-//         (err, rows) => {
-//             if (err) {
-//                 return res.status(500).json({ error: err.message });
-//             }
-//             res.json(rows);
-//         }
-//     );
-// });
+    db.all(
+        'SELECT * FROM messages WHERE project_id = ?',
+        [projectId],
+        (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.json(rows);
+        }
+    );
+});
+
+app.post('/signup', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    db.get(`SELECT * FROM USER WHERE USER_EMAIL = ?`, [email], (err, row) => {
+        if (err) {
+            console.error('Database error during sign-up:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        if (row) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        // Hash the password
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
+            if (err) {
+                console.error('Error hashing password:', err);
+                return res.status(500).json({ error: 'Error hashing password' });
+            }
+
+            const date = new Date().toISOString();
+            db.run(
+                `INSERT INTO USER (USER_NAME, USER_EMAIL, USER_PASSWORD, USER_CREATED, USER_UPDATED) 
+                VALUES (?, ?, ?, ?, ?)`, 
+                [username, email, hashedPassword, date, date], 
+                function (err) {
+                    if (err) {
+                        console.error('Error creating user:', err);
+                        return res.status(500).json({ error: 'Error creating user' });
+                    }
+
+                    res.status(201).json({ message: 'User created successfully', userId: this.lastID });
+                }
+            );
+        });
+    });
+});
 
 
+// Route for user login
+app.post('/login', (req, res) => {
+    const { email, password } = req.body;
+
+    db.get(`SELECT * FROM USER WHERE USER_EMAIL = ?`, [email], (err, row) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error' });
+        }
+        if (!row) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        bcrypt.compare(password, row.USER_PASSWORD, (err, isMatch) => {  // FIX: Change row.password to row.USER_PASSWORD
+            if (err) {
+                return res.status(500).json({ error: 'Error comparing passwords' });
+            }
+            if (!isMatch) {
+                return res.status(400).json({ message: 'Incorrect password' });
+            }
+
+            res.status(200).json({ message: 'Login successful' });
+        });
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
