@@ -1,15 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './Styles/FileUpload.css';
 import { useNavigate } from 'react-router-dom';
+
 const LeerOplaai = () => {
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch files when component loads
+    fetch('http://localhost:5000/files')
+      .then(response => response.json())
+      .then(data => setFiles(data.files));
+  }, []);
+
   const handleFileChange = (event) => {
-    const selectedFiles = Array.from(event.target.files).map((file) => ({
-      ...file,
-      preview: URL.createObjectURL(file),
-    }));
-    setFiles([...files, ...selectedFiles]);
+    const selectedFiles = event.target.files;
+    const formData = new FormData();
+    for (let i = 0; i < selectedFiles.length; i++) {
+      formData.append('files', selectedFiles[i]);
+    }
+
+    // Upload files
+    fetch('http://localhost:5000/upload', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        const newFiles = Array.from(selectedFiles).map(file => ({ name: file.name }));
+        setFiles(prevFiles => [...prevFiles, ...newFiles]);
+      });
+  };
+
+  const handleFileDownload = (fileId, filename) => {
+    // Download file
+    fetch(`http://localhost:5000/files/${fileId}`)
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      });
   };
 
   return (
@@ -31,13 +66,17 @@ const LeerOplaai = () => {
           <div className="file-previews">
             {files.map((file, index) => (
               <div key={index} className="file-preview">
-                <img src={file.preview} alt={file.name} className="file-image" />
-                <div className="file-name">{file.name}</div>
+                <div className="file-name">
+                  {file.filename}
+                  <button onClick={() => handleFileDownload(file.id, file.filename)}>
+                    Download
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </div>
-        <button className="next" onClick={()=>navigate('/dashboard')}>
+        <button className="next" onClick={() => navigate('/dashboard')}>
           Terug na Dashboard
         </button>
       </div>
@@ -46,4 +85,3 @@ const LeerOplaai = () => {
 };
 
 export default LeerOplaai;
-
