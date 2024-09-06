@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Styles/taakbestuur.css';
-
 import add from './assets/add.png';
 
-function TaskForm ({newTask}) {
+function TaskForm({ newTask, projectId }) {
     const [taskName, setName] = useState('');
-    const [taskProject, setProject] = useState('');
     const [taskDescription, setDescription] = useState('');
     const [taskStart, setStart] = useState('');
     const [taskEnd, setEnd] = useState('');
+
     const handleAdd = (e) => {
         e.preventDefault();
-        newTask({taskName, taskProject, taskDescription, taskStart, taskEnd, tStatus : 'To Do'});
+        newTask({ taskName, taskDescription, taskStart, taskEnd, tStatus: 'To Do' });
         setName('');
-        setProject('');
         setDescription('');
-        setStart('Start');
-        setEnd('End');
+        setStart('');
+        setEnd('');
     };
+
     return (
         <form className='add' onSubmit={handleAdd}>
             <input
@@ -25,13 +24,6 @@ function TaskForm ({newTask}) {
                 placeholder="Taak Naam"
                 value={taskName}
                 onChange={(e) => setName(e.target.value)}
-                required
-            />
-            <input 
-                type="text"
-                placeholder="Projek Naam"
-                value={taskProject}
-                onChange={(e) => setProject(e.target.value)}
                 required
             />
             <input
@@ -55,47 +47,43 @@ function TaskForm ({newTask}) {
                 onChange={(e) => setEnd(e.target.value)}
                 required
             />
-            <button className='new' type="submit">Nuwe Taak<img src={add}/></button>
+            <button className='new' type="submit">Nuwe Taak<img src={add} /></button>
         </form>
     );
 }
 
-function TaskItem ({task, editTask, removeTask, handleStatus}) {
+function TaskItem({ task, editTask, removeTask, handleStatus }) {
     const [edit, setEdit] = useState(false);
     const [taskName, setName] = useState(task.taskName);
-    const [taskProject, setProject] = useState(task.taskProject);
     const [taskDescription, setDescription] = useState(task.taskDescription);
     const [taskStart, setStart] = useState(task.taskStart);
     const [taskEnd, setEnd] = useState(task.taskEnd);
+
     const handleEdit = () => {
-        editTask(task.id, {...task, taskName, taskProject, taskDescription, taskStart, taskEnd});
+        editTask(task.id, { ...task, taskName, taskDescription, taskStart, taskEnd });
         setEdit(false);
     };
+
     return (
         <div>
             {edit ? (
                 <div>
-                    <input 
+                    <input
                         type="text"
                         value={taskName}
                         onChange={(e) => setName(e.target.value)}
                     />
-                    <input 
-                        type="text"
-                        value={taskProject}
-                        onChange={(e) => setProject(e.target.value)}
-                    />
-                    <input 
+                    <input
                         type="text"
                         value={taskDescription}
                         onChange={(e) => setDescription(e.target.value)}
                     />
-                    <input 
+                    <input
                         type="date"
                         value={taskStart}
                         onChange={(e) => setStart(e.target.value)}
                     />
-                    <input 
+                    <input
                         type="date"
                         value={taskEnd}
                         onChange={(e) => setEnd(e.target.value)}
@@ -103,42 +91,79 @@ function TaskItem ({task, editTask, removeTask, handleStatus}) {
                     <button onClick={handleEdit}>Save</button>
                     <button onClick={() => setEdit(false)}>Cancel</button>
                 </div>
-            ) :(
+            ) : (
                 <div>
-                <span>{task.taskName} - {task.taskDescription} - {task.taskStart} - {task.taskEnd}</span>
-                <span> - {task.tStatus}</span>
-                <button onClick={() => setEdit(true)}>Edit</button>
-                <button onClick={() => removeTask(task.id)}>Remove</button>
-                <select
-                    value={task.tStatus}
-                    onChange={(e) => handleStatus(task.id, e.target.value)}
-                >
-                    <option value="To Do">To Do</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Done">Done</option>
-                </select>
+                    <span>{task.taskName} - {task.taskDescription} - {task.taskStart} - {task.taskEnd}</span>
+                    <span> - {task.tStatus}</span>
+                    <button onClick={() => setEdit(true)}>Edit</button>
+                    <button onClick={() => removeTask(task.id)}>Remove</button>
+                    <select
+                        value={task.tStatus}
+                        onChange={(e) => handleStatus(task.id, e.target.value)}
+                    >
+                        <option value="To Do">To Do</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Done">Done</option>
+                    </select>
                 </div>
             )}
         </div>
     );
 }
 
-const TaakBestuur = () => { 
+const TaakBestuur = ({ projectId }) => {
     const [tasks, setTasks] = useState([]);
     const [volgendeID, setVolgendeID] = useState(1);
+
+    useEffect(() => {
+        fetch(`http://localhost:5000/projects/${projectId}/tasks`)
+            .then(response => response.json())
+            .then(data => setTasks(data.tasks));
+    }, [projectId]);
+
     const newTask = (task) => {
-        setTasks([...tasks, {...task, id:volgendeID}]);
-        setVolgendeID(volgendeID +1);
+        fetch(`http://localhost:5000/projects/${projectId}/tasks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(task)
+        })
+            .then(response => response.json())
+            .then(data => {
+                setTasks([...tasks, { ...task, id: data.id }]);
+            });
     };
+
     const editTask = (id, editedTask) => {
-        setTasks(tasks.map(task => (task.id === id ? editedTask : task)));
+        fetch(`http://localhost:5000/tasks/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(editedTask)
+        })
+            .then(() => {
+                setTasks(tasks.map(task => (task.id === id ? editedTask : task)));
+            });
     };
+
     const removeTask = (id) => {
-        setTasks(tasks.filter(task => task.id !== id));
+        fetch(`http://localhost:5000/tasks/${id}`, {
+            method: 'DELETE'
+        })
+            .then(() => {
+                setTasks(tasks.filter(task => task.id !== id));
+            });
     };
+
     const handleStatus = (id, tStatus) => {
-        setTasks(tasks.map(task => task.id === id ? {...task, tStatus } : task));
+        fetch(`http://localhost:5000/tasks/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tStatus })
+        })
+            .then(() => {
+                setTasks(tasks.map(task => task.id === id ? { ...task, tStatus } : task));
+            });
     };
+
     return (
         <>
             <div className='container'>
@@ -149,7 +174,7 @@ const TaakBestuur = () => {
                 <div className='addtask'>
                     <h1>Nuwe Taak</h1>
                     <div className="underline"></div>
-                    <TaskForm newTask={newTask}/>
+                    <TaskForm newTask={newTask} projectId={projectId} />
                 </div>
                 <div className='listtask'>
                     {tasks.map(task => (
@@ -165,6 +190,6 @@ const TaakBestuur = () => {
             </div>
         </>
     );
-}
+};
 
 export default TaakBestuur;

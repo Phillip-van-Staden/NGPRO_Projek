@@ -14,7 +14,7 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<LoginSignup/>}/>
-        <Route path='/taakbestuur' element={<Taakbestuur/>}/>
+        <Route path="/taakbestuur/:projectId" element={<Taakbestuur />} />
         <Route path="/samewerking/:projectId" element={<Samewerking/>}/>
         <Route path='/leeroplaai' element={<LeerOplaai/>}/>
         <Route path='/kalender' element={<Kalender/>}/>

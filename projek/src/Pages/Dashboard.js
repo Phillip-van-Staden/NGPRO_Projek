@@ -18,10 +18,10 @@ const Dashboard = () => {
             <h2>Projekbestuur</h2>
             <button onClick={()=>navigate('/projekbestuur')} className="dashboard-button">Bestuur Projekte</button>
           </div>
-          <div className="dashboard-card">
+          {/* <div className="dashboard-card">
             <h2>Taakbestuur</h2>
             <button onClick={()=>navigate('/taakbestuur')} className="dashboard-button">Bestuur Take</button>
-          </div>
+          </div> */}
           {/* <div className="dashboard-card">
             <h2>Samewerking</h2>
             <button onClick={()=>navigate('/samewerking')} className="dashboard-button">Span Kommunikasie</button>

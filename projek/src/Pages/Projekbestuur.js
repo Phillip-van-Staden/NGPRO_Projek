@@ -89,8 +89,8 @@ function ProjekBestuur() {
     function navigateToSamewerking(projectId) {
         navigate(`/samewerking/${projectId}`);
     }
-    function navigateToTake() {
-        navigate(`/taakbestuur`);
+    function navigateToTake(projectId) {
+        navigate(`/taakbestuur/${projectId}`);
     }
     function navigateToDash() {
         navigate(`/dashboard`);
@@ -117,7 +117,7 @@ function ProjekBestuur() {
                         <p className='project'>{projek.start_date} to {projek.end_date}</p>
                         <button className='project' onClick={() => editProjek(index)}>Edit</button>
                         <button className='project' onClick={() => deleteProjek(index)}>Delete</button>
-                        <button className='project' onClick={() => navigateToTake()}>Take</button>
+                        <button className='project' onClick={() => navigateToTake(projek.id)}>Take</button>
                         <button className='project' onClick={() => navigateToSamewerking(projek.id)}>Komunikasie</button>
                     </li>
                 ))}

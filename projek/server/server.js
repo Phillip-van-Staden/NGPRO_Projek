@@ -1,7 +1,6 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
-
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const multer = require('multer');
@@ -24,7 +23,9 @@ db.serialize(() => {
     )`);
     db.run(`CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        message TEXT
+        message TEXT,
+        project_id INTEGER,
+        FOREIGN KEY (project_id) REFERENCES projects (id)
     )`);
     
 
@@ -42,6 +43,23 @@ db.serialize(() => {
         USER_CREATED DATE NOT NULL,
         USER_UPDATED DATE
         )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        taskName TEXT,
+        taskDescription TEXT,
+        taskStart TEXT,
+        taskEnd TEXT,
+        tStatus TEXT,
+        project_id INTEGER,
+        FOREIGN KEY (project_id) REFERENCES projects (id)
+    )`);
+    db.run(`CREATE TABLE IF NOT EXISTS events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        description TEXT,
+        event_date TEXT
+    )`);
 });
 const storage = multer.diskStorage({
     destination: './uploads',
@@ -53,33 +71,43 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Serve static files
+
 app.use('/uploads', express.static('uploads'));
 
-// Route to get all messages
-app.get('/messages', (req, res) => {
-    db.all('SELECT * FROM messages', [], (err, rows) => {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        res.json({ messages: rows });
-    });
-});
-
-// Route to add a new message
-app.post('/messages', (req, res) => {
+// Get all messages
+app.post('/projects/:projectId/messages', (req, res) => {
+    const { projectId } = req.params;
     const { message } = req.body;
-    db.run(`INSERT INTO messages (message) VALUES (?)`, [message], function(err) {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
+
+    db.run(
+        'INSERT INTO messages (message, project_id) VALUES (?, ?)',
+        [message, projectId],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(201).json({ id: this.lastID, message });
         }
-        res.json({ id: this.lastID });
-    });
+    );
 });
 
-// Route to upload files
+// Get messages for a specific project
+app.get('/projects/:projectId/messages', (req, res) => {
+    const { projectId } = req.params;
+
+    db.all(
+        'SELECT * FROM messages WHERE project_id = ?',
+        [projectId],
+        (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.json({ messages: rows });
+        }
+    );
+});
+
+// Upload files
 app.post('/upload', upload.array('files'), (req, res) => {
     const files = req.files;
     const placeholders = files.map(() => '(?, ?)').join(',');
@@ -97,7 +125,25 @@ app.post('/upload', upload.array('files'), (req, res) => {
     });
 });
 
-// Route to get all files
+/// Upload files
+app.post('/upload', upload.array('files'), (req, res) => {
+    const files = req.files;
+    const placeholders = files.map(() => '(?, ?)').join(',');
+    const values = files.flatMap(file => {
+        const fileContent = fs.readFileSync(file.path); 
+        return [file.originalname, fileContent]; 
+    });
+
+    db.run(`INSERT INTO files (filename, filedata) VALUES ${placeholders}`, values, function(err) {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({ uploaded: this.changes });
+    });
+});
+
+// Get all files
 app.get('/files', (req, res) => {
     db.all('SELECT * FROM files', [], (err, rows) => {
         if (err) {
@@ -115,22 +161,22 @@ app.get('/files', (req, res) => {
     });
 });
 
-// Route to download a specific file
-// app.get('/files/:id', (req, res) => {
-//     const { id } = req.params;
-//     db.get('SELECT * FROM files WHERE id = ?', [id], (err, row) => {
-//         if (err) {
-//             res.status(400).json({ error: err.message });
-//             return;
-//         }
-//         if (!row) {
-//             res.status(404).json({ error: 'File not found' });
-//             return;
-//         }
-//         res.setHeader('Content-Disposition', `attachment; filename=${row.filename}`);
-//         res.send(row.filedata);
-//     });
-// });
+// Download a specific file
+app.get('/files/:id', (req, res) => {
+    const { id } = req.params;
+    db.get('SELECT * FROM files WHERE id = ?', [id], (err, row) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        if (!row) {
+            res.status(404).json({ error: 'File not found' });
+            return;
+        }
+        res.setHeader('Content-Disposition', `attachment; filename=${row.filename}`);
+        res.send(row.filedata);
+    });
+});
 
 // Get all projects
 app.get('/projects', (req, res) => {
@@ -182,37 +228,115 @@ app.delete('/projects/:id', (req, res) => {
     });
 });
 
-// Create messages for a project
-app.post('/projects/:projectId/messages', (req, res) => {
+
+// Add a new task to a specific project
+app.post('/projects/:projectId/tasks', (req, res) => {
     const { projectId } = req.params;
-    const { message } = req.body;
+    const { taskName, taskDescription, taskStart, taskEnd, tStatus } = req.body;
 
     db.run(
-        'INSERT INTO messages (message, project_id) VALUES (?, ?)',
-        [message, projectId],
+        'INSERT INTO tasks (taskName, taskDescription, taskStart, taskEnd, tStatus, project_id) VALUES (?, ?, ?, ?, ?, ?)',
+        [taskName, taskDescription, taskStart, taskEnd, tStatus, projectId],
         function (err) {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
-            res.status(201).json({ id: this.lastID, message });
+            res.status(201).json({ id: this.lastID, taskName, taskDescription, taskStart, taskEnd, tStatus });
         }
     );
 });
 
-// Get messages for a project
-app.get('/projects/:projectId/messages', (req, res) => {
+// Get tasks for a specific project
+app.get('/projects/:projectId/tasks', (req, res) => {
     const { projectId } = req.params;
 
     db.all(
-        'SELECT * FROM messages WHERE project_id = ?',
+        'SELECT * FROM tasks WHERE project_id = ?',
         [projectId],
         (err, rows) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
-            res.json(rows);
+            res.json({ tasks: rows });
         }
     );
+});
+
+// Update a task
+app.put('/tasks/:id', (req, res) => {
+    const { id } = req.params;
+    const { taskName, taskDescription, taskStart, taskEnd, tStatus } = req.body;
+
+    db.run(
+        `UPDATE tasks SET taskName = ?, taskDescription = ?, taskStart = ?, taskEnd = ?, tStatus = ? WHERE id = ?`,
+        [taskName, taskDescription, taskStart, taskEnd, tStatus, id],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.json({ updated: this.changes });
+        }
+    );
+});
+
+// Delete a task
+app.delete('/tasks/:id', (req, res) => {
+    const { id } = req.params;
+    db.run(`DELETE FROM tasks WHERE id = ?`, id, function (err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ deleted: this.changes });
+    });
+});
+
+
+// Get all events
+app.get('/events', (req, res) => {
+    db.all('SELECT * FROM events', [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ events: rows });
+    });
+});
+
+// Add a new event
+app.post('/events', (req, res) => {
+    const { title, description, event_date } = req.body;
+    db.run(`INSERT INTO events (title, description, event_date) VALUES (?, ?, ?)`,
+        [title, description, event_date],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(201).json({ id: this.lastID, title, description, event_date });
+        });
+});
+
+// Delete an event
+app.delete('/events/:id', (req, res) => {
+    const { id } = req.params;
+    db.run(`DELETE FROM events WHERE id = ?`, id, function (err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ deleted: this.changes });
+    });
+});
+
+// Update an event
+app.put('/events/:id', (req, res) => {
+    const { id } = req.params;
+    const { title, description, event_date } = req.body;
+    db.run(`UPDATE events SET title = ?, description = ?, event_date = ? WHERE id = ?`,
+        [title, description, event_date, id],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.json({ updated: this.changes });
+        });
 });
 
 app.post('/signup', async (req, res) => {
@@ -231,7 +355,7 @@ app.post('/signup', async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Hash the password
+       
         bcrypt.hash(password, 10, (err, hashedPassword) => {
             if (err) {
                 console.error('Error hashing password:', err);
@@ -269,7 +393,7 @@ app.post('/login', (req, res) => {
             return res.status(400).json({ message: 'User not found' });
         }
 
-        bcrypt.compare(password, row.USER_PASSWORD, (err, isMatch) => {  // FIX: Change row.password to row.USER_PASSWORD
+        bcrypt.compare(password, row.USER_PASSWORD, (err, isMatch) => {  
             if (err) {
                 return res.status(500).json({ error: 'Error comparing passwords' });
             }
