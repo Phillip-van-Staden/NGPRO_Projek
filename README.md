@@ -1,36 +1,43 @@
-Scenario 3: Projekbestuur Hulpmiddel
-Projek Oorsig
+Scenario 3: Project Management Tool Project Overview
 
-Ontwikkel 'n projekbestuur hulpmiddel wat gebruikers toelaat om projekte te skep, take toe te ken, spertye te stel, en vordering te volg. Hierdie hulpmiddel sal span samewerking en produktiwiteit verbeter deur 'n gesentraliseerde platform vir projektoesig te bied.
-Sleutelfunksies
+Develop a project management tool that allows users to create projects, assign tasks, set deadlines, and track progress. This tool will improve team collaboration and productivity by providing a centralized platform for project oversight. 
 
-    Gebruikersverifikasie
-        Registrasie: Gebruikers kan aanmeld met hul e-posadresse.
-        Aanmelding: Gebruikers kan aanmeld met hul geloofsbriewe.
-        Profielbestuur: Gebruikers kan hul persoonlike inligting en profielprente opdateer.
+Key Features:
 
-    Projekbestuur
-        Skep Projekte: Gebruikers kan nuwe projekte skep met beskrywings, begindatums, en einddatums.
-        Redigeer en Verwyder Projekte: Gebruikers kan projekbesonderhede wysig of projekte verwyder wanneer dit nie meer nodig is nie.
-        Sien Projekte: Gebruikers kan 'n lys van hul projekte sien en projekbesonderhede toegang.
+User Authentication
 
-    Taksbestuur
-        Skep Take: Gebruikers kan take by projekte voeg, insluitend beskrywings, toewysings, en spertye.
-        Redigeer en Verwyder Take: Gebruikers kan takbesonderhede wysig of take verwyder soos nodig.
-        Taakstatus: Gebruikers kan taakstatusse opdateer (bv. Te Doen, In Proses, Voltooi).
+    -Registration: Users can sign up with their email addresses.
+    -Login: Users can log in with their credentials.
+    -Profile Management: Users can update their personal information and profile pictures.
 
-    Samewerking
-        Span Kommunikasie: Verskaf 'n besprekingforum of kletsfunksie vir spanlede om te kommunikeer.
-        Lêer Deel: Laat gebruikers toe om lêers wat verband hou met projekte en take op te laai en te deel.
+Project Management
 
-    Vordering Volg
-        Taakvoltooiing: Volg die voltooiing van take en visualiseer vordering deur projektydlyne of Gantt-kaarte.
-        Projekmylpale: Definieer en volg sleutel projekmylpale en spertye.
+    -Create Projects: Users can create new projects with descriptions, start dates, and end dates.
+    -Edit and Delete Projects: Users can edit project details or delete projects when no longer needed.
+    -View Projects: Users can view a list of their projects and access project details.
 
-    Kalender Integrasie
-        Kalender Uitsig: Verskaf 'n kalender uitsig om projek sperdatums en taak spertye te sien.
-        Herinneringe: Stel herinneringe vir opkomende take en sperdatums.
+Task Management
 
-    Lêer Oplaai
-        Dokumentbestuur: Laai, besigtig, en bestuur projekkverwante lêers.
-        Weergawebeheer: Implementeer weergawebeheer om veranderinge aan dokumente en lêers te bestuur.
+    -Create Tasks: Users can add tasks to projects, including descriptions, assignments, and deadlines.
+    -Edit and Delete Tasks: Users can edit task details or delete tasks as needed.
+    -Task Status: Users can update task statuses (e.g., To Do, In Progress, Completed).
+
+Collaboration
+
+    -Team Communication: Provide a discussion forum or chat feature for team members to communicate.
+    -File Sharing: Allow users to upload and share files related to projects and tasks.
+
+Progress Tracking
+
+    -Task Completion: Track task completion and visualize progress through project timelines or Gantt charts.
+    -Project Milestones: Define and track key project milestones and deadlines.
+
+Calendar Integration
+
+    -Calendar View: Provide a calendar view to see project deadlines and task due dates.
+    -Reminders: Set reminders for upcoming tasks and deadlines.
+
+File Upload
+
+    -Document Management: Upload, view, and manage project-related files.
+    -Version Control: Implement version control to manage changes to documents and files.
